@@ -1,0 +1,3 @@
+spring:
+  profiles: local #开发环境
+
