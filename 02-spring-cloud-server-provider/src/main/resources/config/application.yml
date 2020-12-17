@@ -1,0 +1,10 @@
+#服务端口号
+server:
+  port: 18001 #原来是http的8080
+
+spring:
+  application:
+    name: server-provider
+  profiles:
+    active: ${cfg.env}
+
