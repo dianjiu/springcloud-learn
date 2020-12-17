@@ -10,19 +10,20 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.1.RELEASE</version>
+        <version>2.4.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <modules>
         <!--配置聚合的载体，模块都写在此处，方便按顺序统一构建-->
-        <module>spring-boot-core</module>
+        <module>01-spring-cloud-eureka</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>11</java.version>
+        <spring-cloud.version>Hoxton.SR9</spring-cloud.version>
+        <java.version>13</java.version>
         <base.version>1.0-SNAPSHOT</base.version>
     </properties>
 
@@ -31,9 +32,11 @@
         <dependencies>
             <!--子项目依赖-->
             <dependency>
-                <groupId>co.dianjiu</groupId>
-                <artifactId>spring-boot-core</artifactId>
-                <version>${base.version}</version>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -44,4 +47,11 @@
         </plugins>
       </pluginManagement>
     </build>-->
+    <!--<repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+        </repository>
+    </repositories>-->
 </project>
