@@ -21,6 +21,8 @@
         <module>03-spring-cloud-server-consumer-template</module>
         <module>04-spring-cloud-server-consumer-feign</module>
         <module>05-spring-cloud-hystrix-feign</module>
+        <module>06-spring-cloud-hystrix-feign-dashboard</module>
+        <module>07-spring-cloud-hystrix-feign-turbine</module>
     </modules>
 
     <properties>

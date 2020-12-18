@@ -1,0 +1,10 @@
+#服务端口号
+server:
+  port: 18005 #原来是http的8080
+
+spring:
+  application:
+    name: hystrix-feign-dashboard
+  profiles:
+    active: ${cfg.env}
+
