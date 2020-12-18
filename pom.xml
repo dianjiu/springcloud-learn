@@ -20,6 +20,7 @@
         <module>02-spring-cloud-server-provider</module>
         <module>03-spring-cloud-server-consumer-template</module>
         <module>04-spring-cloud-server-consumer-feign</module>
+        <module>05-spring-cloud-hystrix-feign</module>
     </modules>
 
     <properties>

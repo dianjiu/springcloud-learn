@@ -1,0 +1,10 @@
+spring:
+  profiles: local #开发环境
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8888/eureka  ## 注册到 eureka
+  instance:
+    preferIpAddress: true
+
