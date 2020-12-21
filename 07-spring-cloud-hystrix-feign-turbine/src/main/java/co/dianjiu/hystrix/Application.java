@@ -15,7 +15,7 @@ public class Application {
     public static void main(String[] args) {
         System.setProperty("cfg.env","local");
         SpringApplication.run(Application.class, args);
-        System.out.println("请访问  http://localhost:8001/turbine.stream");
+        System.out.println("请访问  http://localhost:18006/turbine.stream");
     }
 
 }
