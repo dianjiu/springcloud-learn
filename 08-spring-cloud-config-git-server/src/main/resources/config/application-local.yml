@@ -1,6 +1,5 @@
 spring:
-  application:
-    name: config-git-server  # 应用名称
+  profiles: local #开发环境
   cloud:
     config:
       server:
@@ -11,3 +10,11 @@ spring:
           password: yourpwd #登录密码
           default-label: master #配置文件分支
           search-paths: demo-config  #配置文件所在根目录
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8888/eureka  ## 注册到 eureka
+  instance:
+    preferIpAddress: true
+
