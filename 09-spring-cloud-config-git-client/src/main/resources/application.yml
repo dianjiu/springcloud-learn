@@ -1,0 +1,13 @@
+server:
+  port: 18008
+management:
+  endpoint:
+    shutdown:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+demo:
+  hello: NaN

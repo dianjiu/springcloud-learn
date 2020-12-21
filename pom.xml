@@ -23,6 +23,8 @@
         <module>05-spring-cloud-hystrix-feign</module>
         <module>06-spring-cloud-hystrix-feign-dashboard</module>
         <module>07-spring-cloud-hystrix-feign-turbine</module>
+        <module>08-spring-cloud-config-git-server</module>
+        <module>09-spring-cloud-config-git-client</module>
     </modules>
 
     <properties>

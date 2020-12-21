@@ -1,0 +1,26 @@
+spring:
+  profiles:
+    active: test
+
+---
+spring:
+  profiles: prod
+  application:
+    name: config-git-client
+  cloud:
+    config:
+      uri: http://localhost:18007
+      label: master
+      profile: prod
+
+
+---
+spring:
+  profiles: test
+  application:
+    name: config-git-client
+  cloud:
+    config:
+      uri: http://localhost:18007
+      label: master
+      profile: test
