@@ -4,15 +4,10 @@ spring:
     config:
       server:
         git:
-          uri: https://gitee.com/dianjiu/spring-config-demo.git #配置文件所在仓库
-          username: yourname #登录账号
-          password: yourpwd #登录密码
+#          uri: https://gitee.com/dianjiu/spring-config-demo.git #配置文件所在仓库
+          uri: http://git.dianjiu.cc/co-dianjiu/spring-config-demo.git #配置文件所在仓库
+          username: dianjiu #登录账号
+          password: dianjiu63 #登录密码
           default-label: master #配置文件分支
           search-paths: demo-config  #配置文件所在根目录
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://127.0.0.1:8888/eureka  ## 注册到 eureka
-  instance:
-    preferIpAddress: true
