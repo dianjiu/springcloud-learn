@@ -1,9 +1,9 @@
 package co.dianjiu.hystrix.fallback;
 
 import co.dianjiu.hystrix.client.IHelloRemote;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
 /**
