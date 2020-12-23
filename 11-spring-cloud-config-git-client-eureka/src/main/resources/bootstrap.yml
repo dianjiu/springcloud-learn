@@ -1,0 +1,37 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8888/eureka  ## 注册到 eureka
+  instance:
+    preferIpAddress: true
+
+spring:
+  profiles:
+    active: test
+
+---
+spring:
+  profiles: prod
+  application:
+    name: config-git-client-eureka
+  cloud:
+    config:
+      label: master
+      profile: prod
+      discovery:
+        enabled: true
+        service-id: config-git-server-eureka
+
+
+---
+spring:
+  profiles: test
+  application:
+    name: config-git-client-eureka
+  cloud:
+    config:
+      label: master
+      profile: test
+      discovery:
+        enabled: true  # 开启
+        service-id: config-git-server-eureka # 指定配置中心服务端的server-id

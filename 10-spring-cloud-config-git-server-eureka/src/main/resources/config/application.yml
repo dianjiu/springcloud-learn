@@ -1,0 +1,10 @@
+#服务端口号
+server:
+  port: 18009 #原来是http的8080
+
+spring:
+  application:
+    name: config-git-server-eureka  # 应用名称
+  profiles:
+    active: ${cfg.env}
+
