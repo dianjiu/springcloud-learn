@@ -1,5 +1,6 @@
 server:
   port: 18010
+
 management:
   endpoint:
     shutdown:

@@ -9,11 +9,11 @@ spring:
           username: dianjiu #登录账号
           password: dianjiu63 #登录密码
           default-label: master #配置文件分支
-          search-paths: demo-config  #配置文件所在根目录
+          search-paths: eureka-demo-config  #配置文件所在根目录
 
 eureka:
   client:
-    serviceUrl:
-      defaultZone: http://127.0.0.1:8888/eureka  ## 注册到 eureka
+    service-url:
+      defaultZone: http://localhost:8888/eureka
   instance:
-    preferIpAddress: true
+    prefer-ip-address: true # 当调用getHostname获取实例的hostname时，返回ip而不是host名称

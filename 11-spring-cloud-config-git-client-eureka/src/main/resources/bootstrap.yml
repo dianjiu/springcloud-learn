@@ -1,19 +1,19 @@
 eureka:
   client:
-    serviceUrl:
-      defaultZone: http://127.0.0.1:8888/eureka  ## 注册到 eureka
+    service-url:
+      defaultZone: http://localhost:8888/eureka
   instance:
-    preferIpAddress: true
+    prefer-ip-address: true # 当其它服务获取地址时提供ip而不是hostname
 
 spring:
+  application:
+    name: config-git-client-eureka  # 应用名称
   profiles:
     active: test
 
 ---
 spring:
   profiles: prod
-  application:
-    name: config-git-client-eureka
   cloud:
     config:
       label: master
@@ -26,8 +26,6 @@ spring:
 ---
 spring:
   profiles: test
-  application:
-    name: config-git-client-eureka
   cloud:
     config:
       label: master

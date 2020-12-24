@@ -21,16 +21,16 @@ public class Application {
         System.setProperty("cfg.env","test");
         SpringApplication.run(Application.class, args);
         // /{application}/{profile}[/{label}]
-        System.out.println("请访问  http://localhost:18007/config-git-client/test");
-        System.out.println("请访问  http://localhost:18007/config-git-client/test/master");
+        System.out.println("请访问  http://localhost:18009/config-git-client-eureka/test");
+        System.out.println("请访问  http://localhost:18009/config-git-client-eureka/test/master");
         // /{application}-{profile}.yml
-        System.out.println("请访问  http://localhost:18007/config-git-client-test.yml");
+        System.out.println("请访问  http://localhost:18009/config-git-client-eureka-test.yml");
         ///{label}/{application}-{profile}.yml
-        System.out.println("请访问  http://localhost:18007/master/config-git-client-test.yml");
+        System.out.println("请访问  http://localhost:18009/master/config-git-client-eureka-test.yml");
         // /{application}-{profile}.properties
-        //System.out.println("请访问  http://localhost:18007/config-git-client-test.properties");
+        //System.out.println("请访问  http://localhost:18009/config-git-client-eureka-test.properties");
         // /{label}/{application}-{profile}.properties
-        //System.out.println("请访问  http://localhost:18007/master/config-git-client-test.properties");
+        //System.out.println("请访问  http://localhost:18009/master/config-git-client-eureka-test.properties");
     }
 
 }

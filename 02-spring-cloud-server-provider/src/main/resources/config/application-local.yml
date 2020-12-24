@@ -2,9 +2,10 @@ spring:
   profiles: local #开发环境
 
 eureka:
-  instance:
-    preferIpAddress: true
   client:
-    serviceUrl:
+    service-url:
       defaultZone: http://127.0.0.1:8888/eureka  ## 注册到 eureka
+  instance:
+    prefer-ip-address: true # 当调用getHostname获取实例的hostname时，返回ip而不是host名称
+    ip-address: 127.0.0.1 # 指定自己的ip信息，不指定的话会自己寻找
 
