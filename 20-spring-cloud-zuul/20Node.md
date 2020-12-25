@@ -1,19 +1,60 @@
-# Getting Started
+# Spring Cloud Zuul
+在Spring Cloud体系中， Spring Cloud Zuul就是提供负载均衡、反向代理、权限认证的一个API gateway。  
 
-### Reference Documentation
+## 框架理解
+Spring Cloud Zuul路由是微服务架构的不可或缺的一部分，提供动态路由，监控，弹性，安全等的边缘服务。  
+Zuul是Netflix出品的一个基于JVM路由和服务端的负载均衡器。
 
-For further reference, please consider the following sections:
+## 快速上手
+1、添加依赖    
+引入spring-cloud-starter-zuul包  
+```xml
+<!--引入网关依赖-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+</dependency>
+<!--引入注册中心依赖-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+</dependency>
+```
+2、配置文件   
+```yml
+server:
+  port: 18019
+spring:
+  application:
+    name:  spring-cloud-zuul
+# 网关会注册到注册中心
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8888/eureka/
+```
+3、启动类  
+在启动类上添加注解@EnableZuulProxy ，声明一个Zuul代理。  
+该代理使用Ribbon来定位注册在Eureka Server中的微服务；  
+同时，该代理还整合了 Hystrix,从而实现了容错，所有经过Zuul的请求都会在Hystrix命令中执行。  
+```java
+@EnableZuulProxy
+@SpringBootApplication
+public class Application {
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.4.1/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.4.1/maven-plugin/reference/html/#build-image)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.4.1/reference/htmlsingle/#boot-features-developing-web-applications)
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
-### Guides
-
-The following guides illustrate how to use some features concretely:
-
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
-
+}
+```
+4、测试步骤  
+启动项目 注册中心 01-spring-cloud-eureka  
+启用服务提供者 02-spring-cloud-server-provider  
+启动服务消费者  04-spring-cloud-server-consumer-feign  
+启动网关 20-spring-cloud-zuul  
+测试访问 http://localhost:18019/server-provider/nice  
+测试访问 http://localhost:18019/server-consumer-feign/nice  
+5、解释说明
+说明默认情况下，Zuul会代理所有注册到Eureka Server的微服务，并且Zuul的路由规则如下：  
+http://ZUUL_HOST:ZUUL_PORT/微服务在Eureka 注册中心上的serviced/** 会被转发到 serviceld 对应的微服务。
