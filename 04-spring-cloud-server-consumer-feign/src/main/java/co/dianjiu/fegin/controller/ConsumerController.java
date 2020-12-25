@@ -11,7 +11,7 @@ public class ConsumerController {
     @Autowired
     private IHelloService helloService;
 
-    @RequestMapping(value = "feignRequest")
+    @RequestMapping(value = "nice")
     public Object feignRequest(){
         String s = helloService.nice();
         return s;
