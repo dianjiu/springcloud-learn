@@ -19,3 +19,8 @@ zuul:
   ignored-services: '*'  #使用'*'可忽略所有微服务
   routes:
     server-provider: /server/**
+  retryable: true #是否开启重试功能
+
+ribbon:
+  MaxAutoRetries: 2  #对当前服务的重试次数
+  MaxAutoRetriesNextServer: 0 #切换相同Server的次数
