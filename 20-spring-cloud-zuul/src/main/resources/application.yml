@@ -14,3 +14,8 @@ management:
     web:
       exposure:
         include: "*"
+
+zuul:
+  ignored-services: '*'  #使用'*'可忽略所有微服务
+  routes:
+    server-provider: /server/**

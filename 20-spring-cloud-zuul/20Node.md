@@ -91,3 +91,53 @@ management:
 上面是filters端点的展示结果，从中，  
 我们可以了解当前Zuul中，error、post、pre、route四种类型的过滤器分别有哪些，  
 每个过滤器的order（执行顺序）是多少，以及是否启用等信息。这对Zul问题的定位很有用  
+
+## 四、路由配置
+1、配置重定向   
+```yml
+zuul:
+  routes:
+    path: /dwz/**
+    url: http://www.ityouknow.com/
+```
+请访问 http://localhost:18019/dwz/spring-cloud
+
+2、自定义指定微服务的访问路径  
+配置zul.routes.指定微服务的serviceId=指定路径 即可。例如∶   
+```yml
+zuul:
+  routes:
+    server-provider: /server/**
+```
+请访问 http://localhost:18019/server/nice
+
+3、忽略指定微服务  
+忽略服务非常简单，可以使用zul.ignored-services配置需要忽略的服务，多个服间用逗号分隔。例如∶
+```yml
+zuul:
+  ignored-services:  user-provider,consumer-movie
+```
+这样就可让Zuul忽略 user-provider和 consumer-movie微服务，只代理其他微服务。
+
+4、忽略所有微服务，只路由指定微服务  
+很多场景下，可能只想要让Zul代理指定的微服务，此时可以将zuul.ignored-services
+设为’*’。  
+```yml
+zuul:
+  ignored-services: '*'  #使用'*'可忽略所有微服务
+  routes:
+    server-provider: /server/**
+```
+这样就可以让Zul只路由server-provider微服务。
+
+5、同时指定微服务的serviceld和对应路径。例如∶  
+```yml
+#该配置方式中，user-route只是给路由一个名称，可以任意起名。
+zuul:
+  routes:
+    user-route:
+      service-id: user-provider
+      # service-id对应的路径
+      path: /user/**
+```
+

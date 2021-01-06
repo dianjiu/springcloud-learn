@@ -20,6 +20,9 @@ public class Application {
         System.out.println("请访问 http://localhost:18019/actuator/routes");
         System.out.println("请访问 http://localhost:18019/actuator/filters");
         System.out.println("请访问 http://localhost:18019/actuator/hystrix.stream");
+        /*四、路由测试*/
+        System.out.println("请访问 http://localhost:18019/dwz/spring-cloud");
+        System.out.println("请访问 http://localhost:18019/server/nice");
     }
 
 }
