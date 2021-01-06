@@ -1,0 +1,17 @@
+server:
+  # port: 18021
+  compression:
+    # 是否开启压缩 默认false
+    enabled: true
+spring:
+  application:
+    name: zipkin-server
+  main:
+    # 让应用以非web服务方式启动 server.port配置将会失效
+    web-application-type: none
+# 网关会注册到注册中心
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8888/eureka/
+

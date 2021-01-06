@@ -3,6 +3,11 @@ server:
 spring:
   application:
     name:  spring-cloud-zuul
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      percentage: 1.0
 # 网关会注册到注册中心
 eureka:
   client:
