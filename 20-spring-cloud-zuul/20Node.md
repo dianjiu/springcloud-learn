@@ -79,7 +79,7 @@ management:
 
 3、查看routes端点  
 访问：http://localhost:8060/actuator/routes 可以查看路由设置。
-  
+
 
 4、查看filters端点  
 访问：http://localhost:8060/actuator/filters 可以查看过滤器端点
@@ -140,4 +140,228 @@ zuul:
       # service-id对应的路径
       path: /user/**
 ```
+
+## 五、过滤器
+过滤器是Zuul的核心组件
+
+1、过滤器类型与请求生命周期   
+Zuul大部分功能都是通过过滤器来实现的。Zuul中定义了4种标准过滤器类型，这些过滤器类型对应于请求的典型生命周期。  
+- PRE：这种过滤器在请求被路由之前调用。可利用这种过滤器实现身份验证、在集群中选择请求的微服务、记录调试信息等。
+- ROUTING：这种过滤器将请求路由到微服务。这种过滤器用于构建发送给微服务的请求,并使用Apache HttpClient或Netflix Ribbon请求微服务。
+- POST：这种过滤器在路由到微服务以后执行。这种过滤器可用来为响应添加标准的 HTTP Header.收集统计信息和指标、将响应从微服务发送给客户端等。
+- ERROR：在其他阶段发生错误时执行该过滤器。
+除了默认的过滤器类型，Zuul还允许创建自定义的过滤器类型。例如，可以定制一种 STATIC类型的过滤器，直接在Zuul中生成响应，而不将请求转发到后端的微服务。
+
+2、Zuul请求的生命周期如下图：
+
+![image-20210106151919240](imges/image-20210106151919240.png)
+
+3、内置过滤器
+
+| 类型  | 顺序 | 过滤器                  | 功能                       |
+| :---- | :--- | :---------------------- | :------------------------- |
+| pre   | -3   | ServletDetectionFilter  | 标记处理Servlet的类型      |
+| pre   | -2   | Servlet30WrapperFilter  | 包装HttpServletRequest请求 |
+| pre   | -1   | FormBodyWrapperFilter   | 包装请求体                 |
+| route | 1    | DebugFilter             | 标记调试标志               |
+| route | 5    | PreDecorationFilter     | 处理请求上下文供后续使用   |
+| route | 10   | RibbonRoutingFilter     | serviceId请求转发          |
+| route | 100  | SimpleHostRoutingFilter | url请求转发                |
+| route | 500  | SendForwardFilter       | forward请求转发            |
+| post  | 0    | SendErrorFilter         | 处理有错误的请求响应       |
+| post  | 1000 | SendResponseFilter      | 处理正常的请求响应         |
+
+4、禁用指定的Filter
+
+可以在application.yml中配置需要禁用的filter，格式：
+
+```yml
+zuul:    
+  FormBodyWrapperFilter:        
+    pre:            
+      disable: true
+```
+
+
+
+5、自定义Zuul过滤器
+
+```java
+public class MyFilter extends ZuulFilter {
+    @Override
+    String filterType() {
+        return "pre"; //定义filter的类型，有pre、route、post、error四种
+    }
+    @Override
+    int filterOrder() {
+        return 10; //定义filter的顺序，数字越小表示顺序越高，越先执行
+    }
+    @Override
+    boolean shouldFilter() {
+        return true; //表示是否需要执行该filter，true表示执行，false表示不执行
+    }
+    @Override
+    Object run() {
+        return null; //filter需要执行的具体操作
+    }
+}
+```
+
+6、自定义Filter示例
+
+我们假设有这样一个场景，因为**服务网关应对的是外部的所有请求**，为了避免产生安全隐患，我们需要对请求做一定的限制，比如请求中含有Token便让请求继续往下走，如果请求不带Token就直接返回并给出提示。
+
+```java
+public class TokenFilter extends ZuulFilter {
+    private final Logger logger = LoggerFactory.getLogger(TokenFilter.class);
+    @Override
+    public String filterType() {
+        return "pre"; // 可以在请求被路由之前调用
+    }
+    @Override
+    public int filterOrder() {
+        return 0; // filter执行顺序，通过数字指定 ,优先级为0，数字越大，优先级越低
+    }
+    @Override
+    public boolean shouldFilter() {
+        return true;// 是否执行该过滤器，此处为true，说明需要过滤
+    }
+    @Override
+    public Object run() {
+        RequestContext ctx = RequestContext.getCurrentContext();
+        HttpServletRequest request = ctx.getRequest();
+        logger.info("--->>> TokenFilter {},{}", request.getMethod(), request.getRequestURL().toString());
+        String token = request.getParameter("token");// 获取请求的参数
+        if (StringUtils.isNotBlank(token)) {
+            ctx.setSendZuulResponse(true); //对请求进行路由
+            ctx.setResponseStatusCode(200);
+            ctx.set("isSuccess", true);
+            return null;
+        } else {
+            ctx.setSendZuulResponse(false); //不对其进行路由
+            ctx.setResponseStatusCode(400);
+            ctx.setResponseBody("token is empty");
+            ctx.set("isSuccess", false);
+            return null;
+        }
+    }
+}
+```
+
+将TokenFilter加入到请求拦截队列，在启动类中添加以下代码：
+
+```java
+@Bean
+public MyTokenFilter myTokenFilter() {
+    return new MyTokenFilter();
+}
+```
+
+这样就将我们自定义好的Filter加入到了请求拦截中。
+
+```
+请访问 http://localhost:18019/server/nice
+请访问 http://localhost:18019/server/nice?token=12341234
+```
+
+通过上面这例子我们可以看出，我们可以使用“PRE”类型的Filter做很多的验证工作，在实际使用中我们可以结合shiro、oauth2.0等技术去做鉴权、验证。
+
+六、路由熔断
+
+当我们的后端服务出现异常的时候，我们不希望将异常抛出给最外层，期望服务可以自动进行一降级。Zuul给我们提供了这样的支持。当某个服务出现异常时，直接返回我们预设的信息。
+
+我们通过自定义的fallback方法，并且将其指定给某个route来实现该route访问出问题的熔断处理。主要继承ZuulFallbackProvider接口来实现，ZuulFallbackProvider默认有两个方法，一个用来指明熔断拦截哪个服务，一个定制返回内容。
+
+```java
+public interface ZuulFallbackProvider {
+   /**
+     * The route this fallback will be used for.
+     * @return The route the fallback will be used for.
+     */
+    public String getRoute();
+    /**
+     * Provides a fallback response.
+     * @return The fallback response.
+     */
+    public ClientHttpResponse fallbackResponse();
+}
+```
+
+实现类通过实现getRoute方法，告诉Zuul它是负责哪个route定义的熔断。而fallbackResponse方法则是告诉 Zuul 断路出现时，它会提供一个什么返回值来处理请求。
+
+后来Spring又扩展了此类，丰富了返回方式，在返回的内容中添加了异常信息，因此最新版本建议直接继承类`FallbackProvider` 。
+
+我们以上面的02-spring-cloud-server-provider服务为例，定制它的熔断返回内容。
+
+```java
+package co.dianjiu.zuul.fallback;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.netflix.zuul.filters.route.FallbackProvider;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.stereotype.Component;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+
+@Component
+public class MyProviderFallback  implements FallbackProvider {
+    private final Logger logger = LoggerFactory.getLogger(MyProviderFallback.class);
+
+    @Override
+    public String getRoute() {
+        return "server-provider";
+    }
+
+    @Override
+    public ClientHttpResponse fallbackResponse(String route, Throwable cause) {
+        if (cause != null && cause.getCause() != null) {
+            String reason = cause.getCause().getMessage();
+            logger.info("Excption {}",reason);
+        }
+        return fallbackResponse();
+    }
+
+    public ClientHttpResponse fallbackResponse() {
+        return new ClientHttpResponse() {
+            @Override
+            public HttpStatus getStatusCode() throws IOException {
+                return HttpStatus.OK;
+            }
+            @Override
+            public int getRawStatusCode() throws IOException {
+                return 200;
+            }
+            @Override
+            public String getStatusText() throws IOException {
+                return "OK";
+            }
+            @Override
+            public void close() {
+            }
+            @Override
+            public InputStream getBody() throws IOException {
+                return new ByteArrayInputStream("The service is unavailable.".getBytes());
+            }
+            @Override
+            public HttpHeaders getHeaders() {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                return headers;
+            }
+        };
+    }
+
+}
+```
+
+当服务出现异常时，打印相关异常信息，并返回”The service is unavailable.”。
+
+> Zuul 目前只支持服务级别的熔断，不支持具体到某个URL进行熔断。
 

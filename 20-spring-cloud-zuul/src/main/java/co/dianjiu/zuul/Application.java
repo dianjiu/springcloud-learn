@@ -1,8 +1,11 @@
 package co.dianjiu.zuul;
 
+import co.dianjiu.zuul.filter.MyTokenFilter;
+import com.fasterxml.jackson.core.filter.TokenFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
+import org.springframework.context.annotation.Bean;
 
 @EnableZuulProxy
 @SpringBootApplication
@@ -23,6 +26,11 @@ public class Application {
         /*四、路由测试*/
         System.out.println("请访问 http://localhost:18019/dwz/spring-cloud");
         System.out.println("请访问 http://localhost:18019/server/nice");
+        System.out.println("请访问 http://localhost:18019/server/nice?token=12341234");
     }
 
+    @Bean
+    public MyTokenFilter myTokenFilter() {
+        return new MyTokenFilter();
+    }
 }
