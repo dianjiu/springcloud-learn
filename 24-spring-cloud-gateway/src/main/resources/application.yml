@@ -1,0 +1,17 @@
+server:
+  port: 18023
+spring:
+  application:
+    name:  spring-cloud-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: gongjie
+          uri: http://httpbin.org
+          predicates:
+            - Path=/get
+# 网关会注册到注册中心
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8888/eureka/
