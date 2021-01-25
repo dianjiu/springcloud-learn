@@ -2,16 +2,79 @@ server:
   port: 18023
 spring:
   application:
-    name:  spring-cloud-gateway
-  cloud:
+    name: api-gateway-server #服务名称
+  cloud: #配置SpringCloudGateway的路由
     gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
       routes:
-        - id: gongjie
-          uri: http://httpbin.org
+        - id: consumer-service
+          uri: lb://server-consumer-feign
           predicates:
-            - Path=/get
+          - Path=/consumer/**
+          filters:
+            - StripPrefix=1
+        - id: hello
+          predicates: #断言
+            - Path=/hello
+          uri: http://localhost:8080  #目标服务地址
+          filters:
+            - AccessAuth=zhangsan
+        #        - AddRequestHeader=X-Request-Foo, Bar
+        #        - RemoveRequestHeader=X-Request-Foo
+        - id: customer_route
+          predicates:
+            - CheckAuth=zhangsan
+          uri: http://51ufo.cn
+
+        #Path 路由断言工厂
+        - id: baidu
+          predicates: #断言
+            - Path=/baidu
+          uri: http://www.baidu.com  #目标服务地址
+
+        #Query 路由断言工厂
+        - id: query_route
+          predicates:
+            - Query=foo, ba.
+          uri: http://c.biancheng.net
+
+        #Method 路由断言工厂
+        - id: method_route
+          predicates:
+            - Method=GET
+          uri: http://jd.com
+
+        #Header 路由断言工厂
+        - id: header_route
+          predicates:
+            - Header=X-Request-Id, \d+
+          uri: http://example.org
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: gongjie
+#          uri: http://httpbin.org
+#          predicates:
+#            - Path=/get
 # 网关会注册到注册中心
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:8888/eureka/
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8888/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+
+#开放所有页面节点  默认只开启了health、info两个节点
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  '*'
+
+logging:
+  level:
+    org.springframework.cloud.gateway: debug
